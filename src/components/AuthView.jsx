@@ -18,10 +18,22 @@ export default function AuthView({ onAuthSuccess }) {
                 const { error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
             } else {
-                const { error } = await supabase.auth.signUp({ email, password });
-                if (error) throw error;
-                alert('Pendaftaran berhasil! Silakan login (atau periksa email Anda jika menggunakan konfirmasi email).');
+                // Use custom registration API with IP rate limiting
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error || 'Pendaftaran gagal');
+                }
+                alert(data.message || 'Pendaftaran berhasil! Silakan login.');
                 setIsLogin(true);
+                setEmail('');
+                setPassword('');
+                setLoading(false);
+                return;
             }
             if (isLogin && onAuthSuccess) {
                 onAuthSuccess();
@@ -76,7 +88,7 @@ export default function AuthView({ onAuthSuccess }) {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg   focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-colors mt-2"
+                        className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed transition-colors mt-2"
                     >
                         {loading ? 'Memproses...' : (isLogin ? 'Login' : 'Daftar')}
                     </button>
@@ -85,7 +97,7 @@ export default function AuthView({ onAuthSuccess }) {
                 <div className="mt-8 text-center text-sm text-slate-600">
                     {isLogin ? 'Belum punya akun?' : 'Sudah punya akun?'}
                     <button 
-                        onClick={() => setIsLogin(!isLogin)}
+                        onClick={() => { setIsLogin(!isLogin); setError(null); }}
                         className="ml-1 font-semibold text-blue-600 hover:text-blue-700 hover:underline"
                     >
                         {isLogin ? 'Daftar di sini' : 'Login di sini'}

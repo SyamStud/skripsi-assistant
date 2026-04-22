@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
-export default function ChatView({ chatSession, papers, onSendMessage, isSending, onUpdateContext }) {
+export default function ChatView({ chatSession, papers, onSendMessage, isSending, onUpdateContext, quota }) {
+    const isQuotaFull = quota && !quota.isAdmin && quota.isDemo && quota.limits && quota.usage.messages >= quota.limits.maxMessages;
     const messagesEndRef = useRef(null);
     const [query, setQuery] = useState('');
     const [showContextOptions, setShowContextOptions] = useState(false);
@@ -154,14 +155,14 @@ export default function ChatView({ chatSession, papers, onSendMessage, isSending
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Tanyakan sesuatu pada Skripsi Assistant..."
-                            disabled={isSending || contextPaperIds.length === 0}
+                            disabled={isSending || contextPaperIds.length === 0 || isQuotaFull}
                             className={`w-full bg-slate-50 border border-slate-200 text-slate-800 text-[15px] rounded-xl pl-5 pr-14 py-3.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors  
-                                ${(isSending || contextPaperIds.length === 0) ? 'opacity-60 cursor-not-allowed' : ''}
+                                ${(isSending || contextPaperIds.length === 0 || isQuotaFull) ? 'opacity-60 cursor-not-allowed' : ''}
                             `}
                         />
                         <button
                             type="submit"
-                            disabled={!query.trim() || isSending || contextPaperIds.length === 0}
+                            disabled={!query.trim() || isSending || contextPaperIds.length === 0 || isQuotaFull}
                             className="absolute right-2 p-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:hover:bg-blue-600 transition-colors"
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -173,6 +174,8 @@ export default function ChatView({ chatSession, papers, onSendMessage, isSending
                     <p className="mt-2 text-center text-xs text-slate-400">
                         {contextPaperIds.length === 0 ? (
                             <span className="text-amber-600 font-medium">Anda harus memilih setidaknya 1 paper sebagai konteks ruang obrolan ini!</span>
+                        ) : isQuotaFull ? (
+                            <span className="text-red-600 font-medium">Kuota prompt Anda telah habis. Harap hubungi admin atau upgrade untuk melanjutkan.</span>
                         ) : (
                             'Skripsi Assistant dapat membuat kesalahan. Harap periksa ulang.'
                         )}

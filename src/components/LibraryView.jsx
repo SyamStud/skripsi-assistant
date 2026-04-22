@@ -1,7 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 
-export default function LibraryView({ papers, onSelectPaper, onUpload, isUploading, onDeletePaper, onRenamePaper }) {
+export default function LibraryView({ papers, onSelectPaper, onUpload, isUploading, onDeletePaper, onRenamePaper, quota }) {
+    const isQuotaFull = quota && !quota.isAdmin && quota.isDemo && quota.limits && quota.usage.papers >= quota.limits.maxUploads;
     return (
         <div className="flex-1 bg-slate-50 p-10 overflow-y-auto">
             <h2 className="text-2xl font-bold text-slate-800 mb-6">My Library</h2>
@@ -10,8 +11,8 @@ export default function LibraryView({ papers, onSelectPaper, onUpload, isUploadi
                 
                 {/* Upload Card */}
                 <div 
-                    onClick={() => !isUploading && document.getElementById('lib-upload').click()} 
-                    className={`flex flex-col items-center justify-center cursor-pointer border-2 border-dashed border-slate-300 rounded-md p-4 transition-all duration-200 min-h-[280px] bg-slate-100 hover:border-blue-500 hover:bg-blue-50 group mb-[34px] ${isUploading ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    onClick={() => !isUploading && !isQuotaFull && document.getElementById('lib-upload').click()} 
+                    className={`flex flex-col items-center justify-center cursor-pointer border-2 border-dashed rounded-md p-4 transition-all duration-200 min-h-[280px] group mb-[34px] ${isQuotaFull ? 'border-red-200 bg-red-50/50 cursor-not-allowed' : 'border-slate-300 bg-slate-100 hover:border-blue-500 hover:bg-blue-50'} ${isUploading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
                     <input 
                         id="lib-upload" 
@@ -35,7 +36,12 @@ export default function LibraryView({ papers, onSelectPaper, onUpload, isUploadi
                             </svg>
                         </div>
                     )}
-                    <span className="text-sm font-semibold text-slate-600 group-hover:text-blue-600">{isUploading ? 'Uploading...' : 'Upload PDF'}</span>
+                    <span className="text-sm font-semibold text-slate-600 group-hover:text-blue-600">
+                        {isUploading ? 'Uploading...' : isQuotaFull ? 'Kuota Penuh' : 'Upload PDF'}
+                    </span>
+                    {isQuotaFull && (
+                        <span className="text-[10px] text-red-500 mt-1 font-medium">Maks. {quota.limits.maxUploads} file (demo)</span>
+                    )}
                 </div>
 
                 {papers.map((paper) => (

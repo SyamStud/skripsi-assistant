@@ -9,7 +9,8 @@ export default function Sidebar({
     onRenameChat,
     onLogout,
     activeTab,
-    onChangeTab
+    onChangeTab,
+    quota
 }) {
     return (
         <aside className="w-64 min-w-[256px] h-screen bg-white border-r border-slate-100 flex flex-col overflow-hidden">
@@ -37,8 +38,38 @@ export default function Sidebar({
 
             {/* Navigation */}
             <nav className="px-3 py-1 space-y-0.5 cursor-pointer">
-                <NavItem icon="library" label="Library" active={activeTab === 'library' || activeTab === 'recent_chats'} onClick={() => onChangeTab('library')} />
+                <NavItem icon="library" label="Library" active={activeTab === 'library'} onClick={() => onChangeTab('library')} />
+                {quota?.isAdmin && (
+                    <NavItem icon="admin" label="Admin Panel" active={activeTab === 'admin'} onClick={() => onChangeTab('admin')} />
+                )}
             </nav>
+
+            {/* Quota Display */}
+            {quota && quota.isDemo && !quota.isAdmin && quota.limits && (
+                <div className="mx-4 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Kuota Demo</p>
+                    <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[11px] text-slate-500">Upload</span>
+                            <span className={`text-[11px] font-bold ${quota.usage.papers >= quota.limits.maxUploads ? 'text-red-500' : 'text-slate-700'}`}>
+                                {quota.usage.papers}/{quota.limits.maxUploads}
+                            </span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-1">
+                            <div className={`h-1 rounded-full transition-all ${quota.usage.papers >= quota.limits.maxUploads ? 'bg-red-400' : 'bg-blue-500'}`} style={{ width: `${Math.min((quota.usage.papers / quota.limits.maxUploads) * 100, 100)}%` }} />
+                        </div>
+                        <div className="flex items-center justify-between mt-1">
+                            <span className="text-[11px] text-slate-500">Prompt</span>
+                            <span className={`text-[11px] font-bold ${quota.usage.messages >= quota.limits.maxMessages ? 'text-red-500' : 'text-slate-700'}`}>
+                                {quota.usage.messages}/{quota.limits.maxMessages}
+                            </span>
+                        </div>
+                        <div className="w-full bg-slate-200 rounded-full h-1">
+                            <div className={`h-1 rounded-full transition-all ${quota.usage.messages >= quota.limits.maxMessages ? 'bg-red-400' : 'bg-blue-500'}`} style={{ width: `${Math.min((quota.usage.messages / quota.limits.maxMessages) * 100, 100)}%` }} />
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Recent Chats */}
             <div className="px-5 mt-4 mb-2 flex items-center justify-between">
@@ -72,6 +103,11 @@ function NavItem({ icon, label, active, onClick }) {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
                 <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+            </svg>
+        ),
+        admin: (
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
         ),
         logout: (

@@ -1,11 +1,18 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { getAuthUser } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(request) {
     try {
+        const auth = await getAuthUser(request);
+        if (!auth) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
         const { data, error } = await supabaseAdmin
             .from('papers')
             .select('*')
+            .eq('user_id', auth.user.id)
             .order('created_at', { ascending: false });
 
         if (error) throw error;

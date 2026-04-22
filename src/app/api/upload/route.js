@@ -1,10 +1,32 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { getAuthUser, isDemoMode, getQuotaLimits } from '@/lib/auth';
 import { extractPDFText, chunkText, extractMetadata, generateSummary } from '@/lib/pdfProcessor';
 import { upsertChunks } from '@/lib/vectorStore';
 
 export async function POST(request) {
     try {
+        const auth = await getAuthUser(request);
+        if (!auth) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Quota check for demo mode (skip for admins)
+        if (isDemoMode() && !auth.isAdmin) {
+            const { maxUploads } = getQuotaLimits();
+            const { count, error: countError } = await supabaseAdmin
+                .from('papers')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', auth.user.id);
+
+            if (!countError && count >= maxUploads) {
+                return NextResponse.json(
+                    { error: `Kuota upload habis. Maksimal ${maxUploads} file dalam mode demo.` },
+                    { status: 429 }
+                );
+            }
+        }
+
         const formData = await request.formData();
         const file = formData.get('file');
 
@@ -22,7 +44,15 @@ export async function POST(request) {
             );
         }
 
+        // Limit file size to 10MB
+        const MAX_FILE_SIZE = 10 * 1024 * 1024;
         const buffer = Buffer.from(await file.arrayBuffer());
+        if (buffer.length > MAX_FILE_SIZE) {
+            return NextResponse.json(
+                { error: 'Ukuran file maksimal 10MB' },
+                { status: 400 }
+            );
+        }
 
         const { text, pageCount } = await extractPDFText(buffer);
 
@@ -50,6 +80,7 @@ export async function POST(request) {
                 filename: file.name,
                 status: 'processing',
                 page_count: pageCount,
+                user_id: auth.user.id,
             })
             .select()
             .single();
