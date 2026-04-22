@@ -122,7 +122,7 @@ export default function ChatView({ chatSession, papers, onSendMessage, isSending
                                     }
                                 `}
                             >
-                                <p className="whitespace-pre-wrap">{message.content}</p>
+                                <p className="whitespace-pre-wrap text-justify">{message.content}</p>
                                 
                                 {/* Dihapus: Bagian "Sumber" */}
                             </div>
@@ -172,7 +172,7 @@ export default function ChatView({ chatSession, papers, onSendMessage, isSending
                     </form>
                     <p className="mt-2 text-center text-xs text-slate-400">
                         {contextPaperIds.length === 0 ? (
-                            <span className="text-amber-600 font-medium">⚠️ Anda harus memilih setidaknya 1 paper sebagai konteks ruang obrolan ini!</span>
+                            <span className="text-amber-600 font-medium">Anda harus memilih setidaknya 1 paper sebagai konteks ruang obrolan ini!</span>
                         ) : (
                             'Skripsi Assistant dapat membuat kesalahan. Harap periksa ulang.'
                         )}

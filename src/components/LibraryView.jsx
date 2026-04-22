@@ -93,7 +93,7 @@ function PaperCard({ paper, onSelect, onDelete, onRename }) {
                     if(e.target.closest('.no-drag')) return;
                     onSelect();
                 }}
-                className="cursor-pointer w-full aspect-[1/1.414] bg-white rounded-md shadow-sm border border-slate-200 p-4 flex flex-col transition-all duration-200 mb-2 relative overflow-hidden hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300"
+                className="cursor-pointer w-full aspect-[1/1.414] bg-white rounded-md border border-slate-200 p-4 flex flex-col transition-all duration-200 mb-2 relative overflow-hidden hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-300"
             >
                 {/* 3 dots Menu Button */}
                 <div className="absolute top-2 right-2 no-drag" ref={menuRef}>
@@ -211,11 +211,17 @@ function PaperCard({ paper, onSelect, onDelete, onRename }) {
 
             {/* Simple Modal Preview */}
             {showPreview && (
-                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col transform transition-all no-drag overflow-hidden">
+                <div 
+                    className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                    style={{ animation: 'fadeIn 0.2s ease-out' }}
+                >
+                    <div 
+                        className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col no-drag overflow-hidden"
+                        style={{ animation: 'slideUp 0.3s ease-out' }}
+                    >
                         <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                             <h3 className="font-bold text-slate-800 truncate pr-4 text-base">{paper.title || paper.filename}</h3>
-                            <button onClick={() => setShowPreview(false)} className="text-slate-400 hover:text-slate-700 p-1 bg-white rounded-md shadow-sm border border-slate-200">
+                            <button onClick={() => setShowPreview(false)} className="text-slate-400 hover:text-slate-700 p-1 bg-white rounded-md border border-slate-200">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
                                     <line x1="18" y1="6" x2="6" y2="18"></line>
                                     <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -246,8 +252,14 @@ function PaperCard({ paper, onSelect, onDelete, onRename }) {
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /><polyline points="10 9 9 9 8 9" /></svg>
                                     Ringkasan Ekstraksi AI
                                 </span>
-                                <div className="text-sm text-slate-700 leading-relaxed bg-blue-50/50 p-4 rounded-lg border border-blue-100/50">
-                                    {paper.summary || 'Summary belum tersedia.'}
+                                <div className="text-sm text-slate-700 leading-relaxed bg-blue-50/50 p-4 rounded-lg border border-blue-100/50 text-justify">
+                                    {paper.summary ? (
+                                        paper.summary.split('\n').map((paragraph, idx) => (
+                                            paragraph.trim() ? <p key={idx} className="mb-3.5 last:mb-0">{paragraph}</p> : null
+                                        ))
+                                    ) : (
+                                        'Summary belum tersedia.'
+                                    )}
                                 </div>
                             </div>
                         </div>

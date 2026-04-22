@@ -16,7 +16,7 @@ export default function Sidebar({
             {/* Logo */}
             <div className="p-5 pb-3 flex items-center gap-3">
                 <div>
-                    <h1 className="text-[15px] font-bold text-blue-600 leading-tight">Skripsi Assistant</h1>
+                    <h1 className="text-[18px] font-bold text-slate-800 leading-tight">Skripsi Assistant</h1>
                     <p className="text-[11px] text-slate-400 leading-tight">Academic Tools</p>
                 </div>
             </div>
@@ -25,7 +25,7 @@ export default function Sidebar({
             <div className="p-4 pt-1 pb-2">
                 <button
                     onClick={onCreateNewChat}
-                    className="w-full flex items-center justify-center gap-2 text-white text-[13px] font-semibold py-2.5 px-4 rounded-xl transition-all bg-blue-600 hover:bg-blue-700 shadow-blue-600/25 cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 text-white text-[13px] font-semibold py-2.5 px-4 rounded-md transition-all bg-blue-600 hover:bg-blue-700 shadow-blue-600/25 cursor-pointer"
                 >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                         <line x1="12" y1="5" x2="12" y2="19" />
@@ -86,10 +86,10 @@ function NavItem({ icon, label, active, onClick }) {
     return (
         <button
             onClick={onClick}
-            className={`cursor-pointer w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-colors border
+            className={`cursor-pointer w-full flex items-center gap-3 px-3 py-3 rounded-lg text-[13px] font-medium transition-colors border
                 ${active
-                    ? 'bg-blue-50/80 text-blue-700 border-blue-100'
-                    : 'bg-transparent text-slate-600 hover:bg-slate-50 border-transparent hover:text-slate-900'}
+                    ? 'bg-blue-50/80 text-blue-600 font-semibold border-blue-100'
+                    : 'bg-transparent text-slate-600 font-semibold hover:bg-slate-50 border-transparent hover:text-slate-900'}
             `}
         >
             <span className={active ? 'text-blue-600' : 'text-slate-400'}>{icons[icon]}</span>
@@ -161,7 +161,7 @@ function ChatItem({ chat, isSelected, onSelect, onDelete, onRename }) {
                                 e.stopPropagation();
                                 setIsRenaming(true);
                             }}
-                            className={`text-[12px] font-semibold truncate ${isSelected ? 'text-slate-800' : 'text-slate-700'}`}
+                            className={`text-[12px] font-semibold truncate ${isSelected ? 'text-blue-600' : 'text-slate-700'}`}
                             title={chat.title || 'Chat Baru'}
                         >
                             {chat.title || 'Chat Baru'}

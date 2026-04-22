@@ -36,19 +36,11 @@ export default function AuthView({ onAuthSuccess }) {
     return (
         <div className="flex items-center justify-center min-h-screen bg-slate-50">
             <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl shadow-slate-200 border border-slate-100">
-                <div className="flex justify-center mb-6">
-                    <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/30">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-                        </svg>
-                    </div>
-                </div>
-                
                 <h2 className="text-2xl font-bold text-center text-slate-800 mb-2">
                     Masuk ke Skripsi Assistant
                 </h2>
                 <p className="text-center text-slate-500 mb-8 text-sm">
-                    {isLogin ? 'Masuk kembali untuk melanjutkan riset Anda.' : 'Buat akun Anda sekarang juga.'}
+                    {isLogin ? 'Masuk kembali untuk melanjutkan riset Anda' : 'Buat akun Anda sekarang juga'}
                 </p>
 
                 {error && (
