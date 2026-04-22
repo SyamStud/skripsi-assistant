@@ -1,12 +1,12 @@
 import { searchSimilar } from './vectorStore';
 import { generateWithSystemPrompt } from './groq';
 
-export async function retrieveAndAnswer(query, userId, documentId) {
+export async function retrieveAndAnswer(query, userId, documentIds) {
     const chunks = await searchSimilar(
         `doc_${userId}`,
         query,
-        documentId,
-        5
+        documentIds,
+        10 // Search more chunks if multiple files are involved
     );
 
     if (chunks.length === 0) {

@@ -31,13 +31,13 @@ export async function upsertChunks(indexName, documentId, chunks) {
     return vectorIds;
 }
 
-export async function searchSimilar(indexName, query, documentId, topK = 5) {
+export async function searchSimilar(indexName, query, documentIds = [], topK = 5) {
     const queryEmbedding = await embedText(query);
 
-    const { data, error } = await supabaseAdmin.rpc('match_document_chunks', {
+    const { data, error } = await supabaseAdmin.rpc('match_document_chunks_v2', {
         query_embedding: queryEmbedding,
         match_count: topK,
-        filter_document_id: documentId.toString(),
+        filter_document_ids: documentIds.length > 0 ? documentIds.map(String) : null,
     });
 
     if (error) {

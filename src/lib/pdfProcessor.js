@@ -1,14 +1,27 @@
-import pdf from 'pdf-parse';
+import { PDFParse } from 'pdf-parse';
 import fs from 'fs';
 import { generateWithGroq, generateWithSystemPrompt } from './groq';
 
-export async function extractPDFText(filePath) {
-    const dataBuffer = fs.readFileSync(filePath);
-    const data = await pdf(dataBuffer);
-    return {
-        text: data.text,
-        pageCount: data.numpages,
-    };
+export async function extractPDFText(input) {
+    let source;
+    if (Buffer.isBuffer(input)) {
+        source = { data: input };
+    } else {
+        const data = fs.readFileSync(input);
+        source = { data };
+    }
+
+    const parser = new PDFParse(source);
+    try {
+        const result = await parser.getText();
+        const info = await parser.getInfo();
+        return {
+            text: result.text || '',
+            pageCount: info?.numPages || 0,
+        };
+    } finally {
+        await parser.destroy();
+    }
 }
 
 export function chunkText(text, chunkSize = 1000, overlap = 100) {
